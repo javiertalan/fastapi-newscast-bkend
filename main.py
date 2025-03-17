@@ -3,11 +3,11 @@ import chromadb
 
 app = FastAPI()
 
-# Initialize ChromaDB (persistent storage)
+# Initialize ChromaDB
 client = chromadb.PersistentClient(path="./chroma_db")
 collection = client.get_or_create_collection("news")
 
-# Endpoint to add news articles to the database
+# ✅ Ensure this endpoint allows POST requests
 @app.post("/add_news/")
 def add_news(title: str, description: str, link: str):
     collection.add(
@@ -15,14 +15,3 @@ def add_news(title: str, description: str, link: str):
         metadatas=[{"title": title, "link": link}]
     )
     return {"message": "News added"}
-
-# Endpoint to search for relevant news articles
-@app.get("/search_news/")
-def search_news(query: str):
-    results = collection.query(query_texts=[query], n_results=5)
-    return results["metadatas"]
-
-# Root endpoint
-@app.get("/")
-def home():
-    return {"message": "Welcome to the AI-powered Newscast API"} 
